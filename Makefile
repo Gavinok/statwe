@@ -6,7 +6,7 @@ VERSION = 2.1
 all: statwe
 
 statwe: statwe.c
-	gcc -o statwe statwe.c -O2 -s -lasound -lX11
+	gcc -o statwe statwe.c -std=c99 -Ofast -Wall -Wextra -s -lasound -lX11
 
 uninstall:
 	rm -f /usr/local/bin/statwe\
