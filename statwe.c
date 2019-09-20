@@ -4,6 +4,7 @@
 #include <string.h>
 #include <alsa/asoundlib.h>
 #include <X11/Xlib.h>
+#include "config.h"
 
 #define PATH_MAX 100
 #define VERSION 0.1
@@ -279,11 +280,14 @@ int sleepie()
     return 0;   
 }
 
+/*
+ * returns: light percentage as in int
+ */
 int light()
 {
-    int batperc = battery_perc("BAT0");
+    int batperc = battery_perc(bataddress);
     const char * date = datetime("%a, %b %d %I:%M%p");
-    const char * bar = battery_bar("BAT0");
+    const char * bar = battery_bar(bataddress);
     const char * ram = ram_used();
     float brightperc = brightness();
     int temp = termals("/sys/class/hwmon/hwmon1/temp1_input");
@@ -294,11 +298,14 @@ int light()
     return 0;
 }
 
+/*
+ * prints the normal status bar with the volume level added at the front
+ */
 int audio()
 {
-    int batperc = battery_perc("BAT0");
+    int batperc = battery_perc(bataddress);
     const char * date = datetime("%a, %b %d %I:%M%p");
-    const char * bar = battery_bar("BAT0");
+    const char * bar = battery_bar(bataddress);
     const char * ram = ram_used();
     int temp = termals("/sys/class/hwmon/hwmon1/temp1_input");
     long vol = -1;
@@ -309,11 +316,15 @@ int audio()
     XSetRoot(name);
     return 0;
 }
+
+/*
+ * prints the status bar to the root window title
+ */
 int normal()
 {
-    int batperc = battery_perc("BAT0");
+    int batperc = battery_perc(bataddress);
     const char * date = datetime("%a, %b %d %I:%M%p");
-    const char * bar = battery_bar("BAT0");
+    const char * bar = battery_bar(bataddress);
     const char * ram = ram_used();
     int temp = termals("/sys/class/hwmon/hwmon1/temp1_input");
     char name[200];
