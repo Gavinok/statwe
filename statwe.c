@@ -1,11 +1,12 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
+#include <stdlib.h>
 #include <string.h>
 #include <alsa/asoundlib.h>
 #include <X11/Xlib.h>
 #include "config.h"
 
+#define alloca(x)  __builtin_alloca(x)
 #define PATH_MAX 100
 #define VERSION 0.1
 #define LEN(x) (sizeof (x) / sizeof *(x))
@@ -285,7 +286,7 @@ int termals(const char *file)
 }
 
 /*
- * Prints the way the command is intended to be used to standerd error
+ * prints the way the command is intended to be used to standerd error
  */
 static void usage(void)
 {
@@ -296,7 +297,7 @@ static void usage(void)
 /*
  * Sets the rootwindow name
  */
-void XSetRoot(const char *name){
+static void XSetRoot(const char *name){
     Display *display;
 
     if (( display = XOpenDisplay(0x0)) == NULL ) {
@@ -315,10 +316,10 @@ void XSetRoot(const char *name){
  *
  * returns 0 if successful
  */
-int sleepie()
+int sleepie(int time)
 {
     struct timespec tim, tim2;
-    tim.tv_sec = 1;
+    tim.tv_sec = time;
     tim.tv_nsec = 500;
 
     if(nanosleep(&tim , &tim2) < 0 )   
@@ -379,7 +380,7 @@ int normal()
     snprintf(name, sizeof(name), "[%d°] [%s] %s %s%d%%", temp, ram, date, bar, batperc);
     XSetRoot(name);
     /* printf("%s\n", name); */
-    if(sleepie() < 0){
+    if(sleepie(sleeptime) < 0){
 	return -1; 
     }
     return 0;
