@@ -12,8 +12,13 @@
 #define MAXSTR  1024
 char buf[1024];
 
-int
-pscanf(const char *path, const char *fmt, ...)
+/*
+ * Goes to the specified location and takes the formated 
+ * string then stores the values in the specified variables.
+ *
+ * path: path to the file
+ */
+int pscanf(const char *path, const char *fmt, ...)
 {
 	FILE *fp;
 	va_list ap;
@@ -31,6 +36,9 @@ pscanf(const char *path, const char *fmt, ...)
 	return (n == EOF) ? -1 : n;
 }
 
+/*
+ * returns the amount of ram that is used by the system as a string
+ */
 const char * ram_used(void)
 {
 	uintmax_t total, free, buffers, cached;
@@ -50,6 +58,14 @@ const char * ram_used(void)
 	return ram;
 }
 
+/*
+ * gets the volume of the int int main audio source 
+ * then stores it in outvol
+ *
+ * outvol: pointer to the volume level destination
+ *
+ * returns: 0 if errors occure
+ */
 int audio_volume(long* outvol)
 {
     int ret = 0;
@@ -107,6 +123,9 @@ int audio_volume(long* outvol)
     return 0;
 }
 
+/*
+ * returns the time and date as a string
+ */
 const char * datetime(const char *fmt)
 {
     time_t t;
@@ -120,6 +139,9 @@ const char * datetime(const char *fmt)
     return buf;
 }
 
+/*
+ * returns the contents of a file as a string
+ */
 const char *filetostring(const char *file, char buf[MAXSTR])
 {
     char *filebuffer = 0;
@@ -150,6 +172,9 @@ const char *filetostring(const char *file, char buf[MAXSTR])
     return NULL;
 }
 
+/*
+ * returns: a string containing the battery status as a bar
+ */
 const char * battery_print(int perc, int charging)
 {
     /* printf("state %d\n", charging); */
@@ -170,6 +195,9 @@ const char * battery_print(int perc, int charging)
 	return "|▁|";
 }
 
+/*
+ * returns the battery percentage as an int
+ */
 int battery_perc(const char *bat)
 {
     int perc = -1;
@@ -204,6 +232,9 @@ int battery_state(const char *bat)
     return charging;
 }
 
+/*
+ * returns: the battery status as a string
+ */
 const char * battery_bar(const char *bat)
 {
     int perc = battery_perc(bat);
@@ -221,6 +252,9 @@ const char * battery_bar(const char *bat)
     return battery_print(perc, state);
 }
 
+/*
+ * returns: the brightness percentage as a float
+ */
 float brightness()
 {
     const char *filename = "/sys/class/backlight/intel_backlight/brightness";
@@ -236,6 +270,9 @@ float brightness()
     return percentbrightness;
 }
 
+/*
+ * returns: the current cpu temp
+ */
 int termals(const char *file)
 {
     char tempbuf[MAXSTR];
@@ -247,13 +284,19 @@ int termals(const char *file)
     return temp;
 }
 
+/*
+ * Prints the way the command is intended to be used to standerd error
+ */
 static void usage(void)
 {
     fputs("usage: statwe [-bavh] \n", stderr);
     exit(1);
 }
 
-static void XSetRoot(const char *name){
+/*
+ * Sets the rootwindow name
+ */
+void XSetRoot(const char *name){
     Display *display;
 
     if (( display = XOpenDisplay(0x0)) == NULL ) {
@@ -267,6 +310,11 @@ static void XSetRoot(const char *name){
     XCloseDisplay(display);
 }
 
+/*
+ * tels the program to wait 1 secound before runinng again
+ *
+ * returns 0 if successful
+ */
 int sleepie()
 {
     struct timespec tim, tim2;
