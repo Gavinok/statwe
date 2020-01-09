@@ -292,11 +292,9 @@ const char * battery_bar(const char *bat)
  */
 float brightness()
 {
-    const char *filename = "/sys/class/backlight/intel_backlight/brightness";
-    const char *file2name = "/sys/class/backlight/intel_backlight/max_brightness";
     char lightbuf[MAXSTR];
-    int currentbrightness = atoi(filetostring(filename,lightbuf));    
-    int maxbrightness = atoi(filetostring(file2name,lightbuf));    
+    int currentbrightness = atoi(filetostring(cur_brightness,lightbuf));    
+    int maxbrightness = atoi(filetostring(max_brightness,lightbuf));    
     if(maxbrightness == 0){
 	printf("error retreiving brightness percentage\n");
 	return -1;
