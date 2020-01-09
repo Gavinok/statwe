@@ -13,6 +13,40 @@
 #define MAXSTR  1024
 char buf[1024];
 
+/* File Parsing */
+int pscanf(const char *path, const char *fmt, ...);
+
+/* Ram Usage Parsing*/
+const char * ram_used(void);
+
+/* Alsa Audio Parsing */
+int audio_volume(long* outvol);
+
+/* Date And Time Formatting */
+const char * datetime(const char *fmt);
+
+/* Battery Status */
+const char * battery_print(int perc, int charging);
+int battery_perc(const char *bat);
+int battery_state(const char *bat);
+const char * battery_bar(const char *bat);
+
+/* Brightness Parsing */
+float brightness();
+
+/* CPU Temperature Parsing */
+int termals(const char *file);
+
+/* helper functions */
+static void usage(void);
+static void XSetRoot(const char *name);
+int sleepie(int time);
+
+/* Bar Elements */
+int light();
+int audio();
+int normal();
+
 /*
  * Goes to the specified location and takes the formated 
  * string then stores the values in the specified variables.
@@ -297,7 +331,8 @@ static void usage(void)
 /*
  * Sets the rootwindow name
  */
-static void XSetRoot(const char *name){
+static void XSetRoot(const char *name)
+{
     Display *display;
 
     if (( display = XOpenDisplay(0x0)) == NULL ) {
