@@ -356,9 +356,7 @@ int sleepie(int time)
     tim.tv_nsec = 500;
 
     if(nanosleep(&tim , &tim2) < 0 )   
-    {
-	return -1;
-    }
+		return -1;
     return 0;   
 }
 
@@ -374,7 +372,6 @@ int light()
     float brightperc = brightness();
     int temp = termals("/sys/bus/platform/devices/coretemp.0/hwmon/hwmon4/temp3_input");
     char name[200];
-    /* snprintf( "Vol: %ld%% [%d°] [%s] %s %s%d%%\n", vol, temp,  ram, date, bar, batperc); */
     snprintf(name, sizeof(name), "light: %.0f%% [%d°] [%s] %s %s%d%%", brightperc, temp, ram, date, bar, batperc);
     XSetRoot(name);
     return 0;
@@ -392,7 +389,7 @@ int audio()
     int temp = termals("/sys/bus/platform/devices/coretemp.0/hwmon/hwmon4/temp3_input");
     long vol = -1;
     audio_volume(&vol);
-    vol++; // since this is for some reason of by one percent
+    vol++; // since this is for some reason off by one percent
     char name[200];
     snprintf(name, sizeof(name), "Vol: %ld%% [%d°] [%s] %s %s%d%%", vol, temp,  ram, date, bar, batperc);
     XSetRoot(name);
@@ -412,7 +409,6 @@ int normal()
     char name[200];
     snprintf(name, sizeof(name), "[%d°] [%s] %s %s%d%%", temp, ram, date, bar, batperc);
     XSetRoot(name);
-    /* printf("%s\n", name); */
     if(sleepie(sleeptime) < 0){
 	return -1; 
     }
