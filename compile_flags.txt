@@ -1,0 +1,7 @@
+-std=c99 
+-Ofast 
+-Wall 
+-Wextra 
+-s 
+-lasound 
+-lX11
