@@ -339,7 +339,7 @@ int light()
     const char * bar = battery_bar(bataddress);
     const char * ram = ram_used();
     float brightperc = brightness();
-    int temp = termals("/sys/class/hwmon/hwmon1/temp1_input");
+    int temp = termals("/sys/bus/platform/devices/coretemp.0/hwmon/hwmon4/temp3_input");
     char name[200];
     /* snprintf( "Vol: %ld%% [%d°] [%s] %s %s%d%%\n", vol, temp,  ram, date, bar, batperc); */
     snprintf(name, sizeof(name), "light: %.0f%% [%d°] [%s] %s %s%d%%", brightperc, temp, ram, date, bar, batperc);
@@ -356,7 +356,7 @@ int audio()
     const char * date = datetime("%a, %b %d %I:%M%p");
     const char * bar = battery_bar(bataddress);
     const char * ram = ram_used();
-    int temp = termals("/sys/class/hwmon/hwmon1/temp1_input");
+    int temp = termals("/sys/bus/platform/devices/coretemp.0/hwmon/hwmon4/temp3_input");
     long vol = -1;
     audio_volume(&vol);
     vol++; // since this is for some reason of by one percent
@@ -375,7 +375,7 @@ int normal()
     const char * date = datetime("%a, %b %d %I:%M%p");
     const char * bar = battery_bar(bataddress);
     const char * ram = ram_used();
-    int temp = termals("/sys/class/hwmon/hwmon1/temp1_input");
+    int temp = termals("/sys/bus/platform/devices/coretemp.0/hwmon/hwmon4/temp3_input");
     char name[200];
     snprintf(name, sizeof(name), "[%d°] [%s] %s %s%d%%", temp, ram, date, bar, batperc);
     XSetRoot(name);
