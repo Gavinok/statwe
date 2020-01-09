@@ -20,3 +20,5 @@ install: all
 	mkdir -p /usr/local/statwe
 	# sed "s/VERSION/${VERSION}/g" < statwe.1 > /usr/local/man1/statwe.1
 	# chmod 644 /usr/local/man1/statwe.1
+clean:
+	rm -f statwe 
