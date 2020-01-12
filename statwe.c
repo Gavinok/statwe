@@ -2,9 +2,9 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
-#include <alsa/asoundlib.h>
 #include <X11/Xlib.h>
 #include "config.h"
+#include "getvol.h"
 
 #define alloca(x)  __builtin_alloca(x)
 #define PATH_MAX 100
@@ -18,9 +18,6 @@ int pscanf(const char *path, const char *fmt, ...);
 
 /* Ram Usage Parsing*/
 const char * ram_used(void);
-
-/* Alsa Audio Parsing */
-int audio_volume(long* outvol);
 
 /* Date And Time Formatting */
 const char * datetime(const char *fmt);
@@ -91,71 +88,6 @@ const char * ram_used(void)
 	static char ram[MAXSTR];
 	snprintf(ram,sizeof(ram),"%.0fM",(double)((total - free - buffers - cached)/1024));
 	return ram;
-}
-
-/*
- * gets the volume of the int int main audio source 
- * then stores it in outvol
- *
- * outvol: pointer to the volume level destination
- *
- * returns: 0 if errors occure
- */
-int audio_volume(long* outvol)
-{
-    int ret = 0;
-    snd_mixer_t* handle;
-    snd_mixer_elem_t* elem;
-    snd_mixer_selem_id_t* sid;
-
-    static const char* mix_name = "Master";
-    static const char* card = "default";
-    static int mix_index = 0;
-
-    snd_mixer_selem_id_alloca(&sid);
-
-    //sets simple-mixer index and name
-    snd_mixer_selem_id_set_index(sid, mix_index);
-    snd_mixer_selem_id_set_name(sid, mix_name);
-
-    if ((snd_mixer_open(&handle, 0)) < 0)
-	return -1;
-    if ((snd_mixer_attach(handle, card)) < 0) {
-	snd_mixer_close(handle);
-	return -2;
-    }
-    if ((snd_mixer_selem_register(handle, NULL, NULL)) < 0) {
-	snd_mixer_close(handle);
-	return -3;
-    }
-    ret = snd_mixer_load(handle);
-    if (ret < 0) {
-	snd_mixer_close(handle);
-	return -4;
-    }
-    elem = snd_mixer_find_selem(handle, sid);
-    if (!elem) {
-	snd_mixer_close(handle);
-	return -5;
-    }
-
-    long minv, maxv;
-
-    snd_mixer_selem_get_playback_volume_range (elem, &minv, &maxv);
-
-    if(snd_mixer_selem_get_playback_volume(elem, 0, outvol) < 0) {
-	snd_mixer_close(handle);
-	return -6;
-    }
-
-    /* make the value bound to 100 */
-    *outvol -= minv;
-    maxv -= minv;
-    minv = 0;
-    *outvol = 100 * (*outvol) / maxv; // make the value bound from 0 to 100
-
-    snd_mixer_close(handle);
-    return 0;
 }
 
 /*
@@ -387,13 +319,12 @@ int audio()
     const char * bar = battery_bar(bataddress);
     const char * ram = ram_used();
     int temp = termals("/sys/bus/platform/devices/coretemp.0/hwmon/hwmon4/temp3_input");
-    long vol = -1;
-    audio_volume(&vol);
-    vol++; // since this is for some reason off by one percent
     char name[200];
     snprintf(name, sizeof(name), "Vol: %ld%% [%d°] [%s] %s %s%d%%", vol, temp,  ram, date, bar, batperc);
     XSetRoot(name);
     return 0;
+	int vol = get_volume();
+	vol++; // since this is for some reason off by one percent
 }
 
 /*
