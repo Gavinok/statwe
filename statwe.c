@@ -13,9 +13,6 @@
 #define MAXSTR  1024
 char buf[1024];
 
-/* File Parsing */
-int pscanf(const char *path, const char *fmt, ...);
-
 /* Ram Usage Parsing*/
 const char * ram_used(void);
 
@@ -52,15 +49,10 @@ const char * ram_used(void)
 {
 	uintmax_t total, free, buffers, cached;
 
-	if (pscanf("/proc/meminfo",
-		   "MemTotal: %ju kB\n"
-		   "MemFree: %ju kB\n"
-		   "MemAvailable: %ju kB\n"
-		   "Buffers: %ju kB\n"
-		   "Cached: %ju kB\n",
-		   &total, &free, &buffers, &buffers, &cached) != 5) {
-		return NULL;
-	}
+	FILE *infile = fopen("/proc/meminfo","r");
+	fscanf(infile,"MemTotal: %ju kB\nMemFree: %ju kB\nMemAvailable: %ju kB\nBuffers: %ju kB\nCached: %ju kB\n",
+			&total,&free,&buffers,&buffers,&cached);
+	fclose(infile);
 
 	static char ram[MAXSTR];
 	snprintf(ram,sizeof(ram),"%.0fM",(double)((total - free - buffers - cached)/1024));
