@@ -72,15 +72,15 @@ const char * ram_used(void)
  */
 const char * datetime(const char *fmt)
 {
-    time_t t;
+	time_t t;
 
-    t = time(NULL);
-    if (!strftime(buf, sizeof(buf), fmt, localtime(&t))) {
-	/* warn("strftime: Result string exceeds buffer size"); */
-	return NULL;
-    }
+	t = time(NULL);
+	if (!strftime(buf, sizeof(buf), fmt, localtime(&t))) {
+		/* warn("strftime: Result string exceeds buffer size"); */
+		return NULL;
+	}
 
-    return buf;
+	return buf;
 }
 
 /*
@@ -88,32 +88,32 @@ const char * datetime(const char *fmt)
  */
 const char *filetostring(const char *file, char buf[MAXSTR])
 {
-    char *filebuffer = 0;
-    long length;
-    FILE *f = fopen(file, "rb");
+	char *filebuffer = 0;
+	long length;
+	FILE *f = fopen(file, "rb");
 
-    if (f)
-    {
-	fseek(f, 0, SEEK_END);
-	length = ftell(f);
-	fseek(f, 0, SEEK_SET);
-	filebuffer = malloc(length);
-	if(filebuffer)
+	if (f)
 	{
-	    fread (filebuffer, 1, length, f);
+		fseek(f, 0, SEEK_END);
+		length = ftell(f);
+		fseek(f, 0, SEEK_SET);
+		filebuffer = malloc(length);
+		if(filebuffer)
+		{
+			fread (filebuffer, 1, length, f);
+		}
+		fclose(f);
 	}
-	fclose(f);
-    }
 
-    if(filebuffer && sizeof(filebuffer)< MAXSTR)
-    {
-	strncpy(buf, filebuffer, MAXSTR - 1);
-	buf[MAXSTR-1] = '\0';
-	free(filebuffer);
-	return buf;
-    }
-    printf("failed to parse file");
-    return NULL;
+	if(filebuffer && sizeof(filebuffer)< MAXSTR)
+	{
+		strncpy(buf, filebuffer, MAXSTR - 1);
+		buf[MAXSTR-1] = '\0';
+		free(filebuffer);
+		return buf;
+	}
+	printf("failed to parse file");
+	return NULL;
 }
 
 /*
@@ -121,22 +121,22 @@ const char *filetostring(const char *file, char buf[MAXSTR])
  */
 const char * battery_print(int perc, int charging)
 {
-    /* printf("state %d\n", charging); */
-    if (charging)
-	return "|🗲|";
-    /* return "|🗲|"; */
-    if ( perc <= 5)
-	return "|!|";
-    else if (perc >= 80)
-	return "|▇|";
-    else if (perc >= 60)
-	return "|▅|";
-    else if (perc >= 40)
-	return "|▃|";
-    else if (perc >= 20)
-	return "|▂|";
-    else
-	return "|▁|";
+	/* printf("state %d\n", charging); */
+	if (charging)
+		return "|🗲|";
+	/* return "|🗲|"; */
+	if ( perc <= 5)
+		return "|!|";
+	else if (perc >= 80)
+		return "|▇|";
+	else if (perc >= 60)
+		return "|▅|";
+	else if (perc >= 40)
+		return "|▃|";
+	else if (perc >= 20)
+		return "|▂|";
+	else
+		return "|▁|";
 }
 
 /*
@@ -144,36 +144,36 @@ const char * battery_print(int perc, int charging)
  */
 int battery_perc(const char *bat)
 {
-    int perc = -1;
-    char path[PATH_MAX];
-    char batbuf[MAXSTR];
+	int perc = -1;
+	char path[PATH_MAX];
+	char batbuf[MAXSTR];
 
-    if (snprintf(path, sizeof(path), "/sys/class/power_supply/%s/capacity", bat) < 0) {
-	return -1;
-    }
-    const char *percstr = filetostring(path,batbuf);
-    perc = atoi(percstr); 
-    return perc;
+	if (snprintf(path, sizeof(path), "/sys/class/power_supply/%s/capacity", bat) < 0) {
+		return -1;
+	}
+	const char *percstr = filetostring(path,batbuf);
+	perc = atoi(percstr); 
+	return perc;
 
 }
 
 int battery_state(const char *bat)
 {
-    /* int state = -1; */
-    int charging = 1;
-    char path[PATH_MAX];
-    char batbuf[MAXSTR];
+	/* int state = -1; */
+	int charging = 1;
+	char path[PATH_MAX];
+	char batbuf[MAXSTR];
 
-    if (snprintf(path, sizeof(path), "/sys/class/power_supply/%s/status", bat) < 0) {
-	return -1;
-    }
+	if (snprintf(path, sizeof(path), "/sys/class/power_supply/%s/status", bat) < 0) {
+		return -1;
+	}
 
-    const char *state = filetostring(path,batbuf);
-    if (strncmp(state, "Discharging", 3) == 0)
-	charging = 0;
-    else if (strncmp(state, "Charging", 3) == 0)
-	charging = 1;
-    return charging;
+	const char *state = filetostring(path,batbuf);
+	if (strncmp(state, "Discharging", 3) == 0)
+		charging = 0;
+	else if (strncmp(state, "Charging", 3) == 0)
+		charging = 1;
+	return charging;
 }
 
 /*
@@ -181,19 +181,19 @@ int battery_state(const char *bat)
  */
 const char * battery_bar(const char *bat)
 {
-    int perc = battery_perc(bat);
-    int state = battery_state(bat);
+	int perc = battery_perc(bat);
+	int state = battery_state(bat);
 
 
-    if (perc < 0) {
-	return "error assesing battery level";
-    }
-    if (state < 0) {
-	return "error assesing state";
-    }
+	if (perc < 0) {
+		return "error assesing battery level";
+	}
+	if (state < 0) {
+		return "error assesing state";
+	}
 
-    /* state */
-    return battery_print(perc, state);
+	/* state */
+	return battery_print(perc, state);
 }
 
 /*
@@ -201,15 +201,15 @@ const char * battery_bar(const char *bat)
  */
 float brightness()
 {
-    char lightbuf[MAXSTR];
-    int currentbrightness = atoi(filetostring(cur_brightness,lightbuf));    
-    int maxbrightness = atoi(filetostring(max_brightness,lightbuf));    
-    if(maxbrightness == 0){
-	printf("error retreiving brightness percentage\n");
-	return -1;
-    }
-    float percentbrightness = ((float)currentbrightness/maxbrightness)*100;
-    return percentbrightness;
+	char lightbuf[MAXSTR];
+	int currentbrightness = atoi(filetostring(cur_brightness,lightbuf));    
+	int maxbrightness = atoi(filetostring(max_brightness,lightbuf));    
+	if(maxbrightness == 0){
+		printf("error retreiving brightness percentage\n");
+		return -1;
+	}
+	float percentbrightness = ((float)currentbrightness/maxbrightness)*100;
+	return percentbrightness;
 }
 
 /*
@@ -217,13 +217,13 @@ float brightness()
  */
 int termals(const char *file)
 {
-    char tempbuf[MAXSTR];
-    /* uintmax_t temp; */
-    int temp;
-    temp = atoi(filetostring(file,tempbuf));    
-    temp = temp/1000;
+	char tempbuf[MAXSTR];
+	/* uintmax_t temp; */
+	int temp;
+	temp = atoi(filetostring(file,tempbuf));    
+	temp = temp/1000;
 
-    return temp;
+	return temp;
 }
 
 /*
@@ -231,8 +231,8 @@ int termals(const char *file)
  */
 static void usage(void)
 {
-    fputs("usage: statwe [-bavh] \n", stderr);
-    exit(1);
+	fputs("usage: statwe [-bavh] \n", stderr);
+	exit(1);
 }
 
 /*
@@ -240,17 +240,17 @@ static void usage(void)
  */
 static void XSetRoot(const char *name)
 {
-    Display *display;
+	Display *display;
 
-    if (( display = XOpenDisplay(0x0)) == NULL ) {
-	fprintf(stderr, "[barM] cannot open display!\n");
-	exit(1);
-    }
+	if (( display = XOpenDisplay(0x0)) == NULL ) {
+		fprintf(stderr, "[barM] cannot open display!\n");
+		exit(1);
+	}
 
-    XStoreName(display, DefaultRootWindow(display), name);
-    XSync(display, 0);
+	XStoreName(display, DefaultRootWindow(display), name);
+	XSync(display, 0);
 
-    XCloseDisplay(display);
+	XCloseDisplay(display);
 }
 
 /*
@@ -260,13 +260,15 @@ static void XSetRoot(const char *name)
  */
 int sleepie(int time)
 {
-    struct timespec tim, tim2;
-    tim.tv_sec = time;
-    tim.tv_nsec = 500;
+	struct timespec tim, tim2;
+	tim.tv_sec = time;
+	tim.tv_nsec = 500;
 
-    if(nanosleep(&tim , &tim2) < 0 )   
+	if(nanosleep(&tim , &tim2) < 0 )   
 		return -1;
-    return 0;   
+	return 0;   
+}
+
 /* 
  * The base of the status bar
  */
@@ -324,27 +326,27 @@ int normal()
 
 int main(int argc, char *argv[])
 {
-    for (int i = 1; i < argc; i++){
-	/* these options take no arguments */
-	if (!strcmp(argv[i], "-b")){
-	    if(light() < 0){
-		return 1;
-	    }
-	    return 0;
-	}//update brightness
-	else if (!strcmp(argv[i], "-a")){
-	    if(audio() < 0){
-		return 1;
-	    }
-	    return 0;
-	}//update volume
-	else if (!strcmp(argv[i], "-h")) 
-	    usage();
-    }
-    while(1){
-	if(normal() < 0){
-	    return 1;
+	for (int i = 1; i < argc; i++){
+		/* these options take no arguments */
+		if (!strcmp(argv[i], "-b")){
+			if(light() < 0){
+				return 1;
+			}
+			return 0;
+		}//update brightness
+		else if (!strcmp(argv[i], "-a")){
+			if(audio() < 0){
+				return 1;
+			}
+			return 0;
+		}//update volume
+		else if (!strcmp(argv[i], "-h")) 
+			usage();
 	}
-    }
-    return 0;
+	while(1){
+		if(normal() < 0){
+			return 1;
+		}
+	}
+	return 0;
 }
