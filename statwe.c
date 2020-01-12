@@ -40,33 +40,10 @@ static void XSetRoot(const char *name);
 int sleepie(int time);
 
 /* Bar Elements */
+char * base();
 int light();
 int audio();
 int normal();
-
-/*
- * Goes to the specified location and takes the formated 
- * string then stores the values in the specified variables.
- *
- * path: path to the file
- */
-int pscanf(const char *path, const char *fmt, ...)
-{
-	FILE *fp;
-	va_list ap;
-	int n;
-
-	if (!(fp = fopen(path, "r"))) {
-		/* warn("fopen '%s':", path); */
-		return -1;
-	}
-	va_start(ap, fmt);
-	n = vfscanf(fp, fmt, ap);
-	va_end(ap);
-	fclose(fp);
-
-	return (n == EOF) ? -1 : n;
-}
 
 /*
  * returns the amount of ram that is used by the system as a string
@@ -290,6 +267,18 @@ int sleepie(int time)
     if(nanosleep(&tim , &tim2) < 0 )   
 		return -1;
     return 0;   
+/* 
+ * The base of the status bar
+ */
+char *base(char* base, int len)
+{
+	int batperc = battery_perc(bataddress);
+	const char * date = datetime("%a, %b %d %I:%M%p");
+	const char * bar = battery_bar(bataddress);
+	const char * ram = ram_used();
+	int temp = termals(temperature_file);
+	snprintf(base, len, "[%d°] [%s] %s %s%d%%", temp, ram, date, bar, batperc);
+	return base;
 }
 
 /*
@@ -297,16 +286,12 @@ int sleepie(int time)
  */
 int light()
 {
-    int batperc = battery_perc(bataddress);
-    const char * date = datetime("%a, %b %d %I:%M%p");
-    const char * bar = battery_bar(bataddress);
-    const char * ram = ram_used();
-    float brightperc = brightness();
-    int temp = termals("/sys/bus/platform/devices/coretemp.0/hwmon/hwmon4/temp3_input");
-    char name[200];
-    snprintf(name, sizeof(name), "light: %.0f%% [%d°] [%s] %s %s%d%%", brightperc, temp, ram, date, bar, batperc);
-    XSetRoot(name);
-    return 0;
+	float brightperc = brightness();
+	char start[200], status[250];
+	base(start, 200);
+	snprintf(status, sizeof(status), "light: %.0f%% %s", brightperc, start);
+	XSetRoot(status);
+	return 0;
 }
 
 /*
@@ -314,17 +299,13 @@ int light()
  */
 int audio()
 {
-    int batperc = battery_perc(bataddress);
-    const char * date = datetime("%a, %b %d %I:%M%p");
-    const char * bar = battery_bar(bataddress);
-    const char * ram = ram_used();
-    int temp = termals("/sys/bus/platform/devices/coretemp.0/hwmon/hwmon4/temp3_input");
-    char name[200];
-    snprintf(name, sizeof(name), "Vol: %ld%% [%d°] [%s] %s %s%d%%", vol, temp,  ram, date, bar, batperc);
-    XSetRoot(name);
-    return 0;
 	int vol = get_volume();
 	vol++; // since this is for some reason off by one percent
+	char start[200], status[250];
+	base(start, 200);
+	snprintf(status, sizeof(status), "Vol: %d %s", vol, start);
+	XSetRoot(status);
+	return 0;
 }
 
 /*
@@ -332,18 +313,13 @@ int audio()
  */
 int normal()
 {
-    int batperc = battery_perc(bataddress);
-    const char * date = datetime("%a, %b %d %I:%M%p");
-    const char * bar = battery_bar(bataddress);
-    const char * ram = ram_used();
-    int temp = termals("/sys/bus/platform/devices/coretemp.0/hwmon/hwmon4/temp3_input");
-    char name[200];
-    snprintf(name, sizeof(name), "[%d°] [%s] %s %s%d%%", temp, ram, date, bar, batperc);
-    XSetRoot(name);
-    if(sleepie(sleeptime) < 0){
-	return -1; 
-    }
-    return 0;
+	char status[200];
+	base(status, 200);
+	XSetRoot(status);
+	if(sleepie(sleeptime) < 0){
+		return -1; 
+	}
+	return 0;
 }
 
 int main(int argc, char *argv[])
