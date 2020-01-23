@@ -283,7 +283,8 @@ int light()
 	float brightperc = brightness();
 	char start[200], status[250];
 	base(start, 200);
-	snprintf(status, sizeof(status), "light: %.0f%% %s", brightperc, start);
+	/* snprintf(status, sizeof(status), " %.0f%% %s", brightperc, start); */
+	snprintf(status, sizeof(status), " %.0f%%  %s", brightperc, start);
 	XSetRoot(status);
 	return 0;
 }
@@ -297,7 +298,7 @@ int audio()
 	vol++; // since this is for some reason off by one percent
 	char start[200], status[250];
 	base(start, 200);
-	snprintf(status, sizeof(status), "Vol: %d %s", vol, start);
+	snprintf(status, sizeof(status), " %d%%  %s", vol, start);
 	XSetRoot(status);
 	return 0;
 }
