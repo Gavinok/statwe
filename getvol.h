@@ -1,4 +1,4 @@
-#define alloca(x)  __builtin_alloca(x)
+/* #define alloca(x)  __builtin_alloca(x) */
 #include <alsa/asoundlib.h>
 #include <alsa/control.h>
 

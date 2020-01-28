@@ -6,8 +6,8 @@
 #include "config.h"
 #include "getvol.h"
 
-#define alloca(x)  __builtin_alloca(x)
-#define PATH_MAX 100
+/* #define alloca(x)  __builtin_alloca(x) */
+/* #define PATH_MAX 100 */
 #define VERSION 0.1
 #define LEN(x) (sizeof (x) / sizeof *(x))
 #define MAXSTR  1024
