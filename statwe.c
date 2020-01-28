@@ -37,7 +37,7 @@ static void XSetRoot(const char *name);
 int sleepie(int time);
 
 /* Bar Elements */
-char * base();
+char *base(char* base, int len);
 int light();
 int audio();
 int normal();
@@ -116,7 +116,6 @@ const char * battery_print(int perc, int charging)
 	/* printf("state %d\n", charging); */
 	if (charging)
 		return "|🗲|";
-	/* return "|🗲|"; */
 	if ( perc <= 5)
 		return "|!|";
 	else if (perc >= 80)
