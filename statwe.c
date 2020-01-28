@@ -218,6 +218,24 @@ int termals(const char *file)
 	return temp;
 }
 
+
+
+int countmail(const char *dir)
+{
+	int file_count = 0;
+	DIR * dirp;
+	struct dirent * entry;
+
+	dirp = opendir(dir); /* There should be error handling after this */
+	while ((entry = readdir(dirp)) != NULL) {
+		if (entry->d_type == DT_REG) { /* If the entry is a regular file */
+			file_count++;
+		}
+	}
+	closedir(dirp);
+	return file_count;
+}
+
 /*
  * prints the way the command is intended to be used to standerd error
  */
@@ -271,7 +289,12 @@ char *base(char* base, int len)
 	const char * bar = battery_bar(bataddress);
 	const char * ram = ram_used();
 	int temp = termals(temperature_file);
-	snprintf(base, len, "[%d°] [%s] %s %s%d%%", temp, ram, date, bar, batperc);
+	int mail = countmail(maildir);
+	if (mail > 0) {
+		snprintf(base, len, "[💌 %d] [%d°] [%s] %s %s%d%%", mail, temp, ram, date, bar, batperc);
+	}else{
+		snprintf(base, len, "[%d°] [%s] %s %s%d%%", temp, ram, date, bar, batperc);
+	}
 	return base;
 }
 
@@ -283,7 +306,6 @@ int light()
 	float brightperc = brightness();
 	char start[200], status[250];
 	base(start, 200);
-	/* snprintf(status, sizeof(status), " %.0f%% %s", brightperc, start); */
 	snprintf(status, sizeof(status), " %.0f%%  %s", brightperc, start);
 	XSetRoot(status);
 	return 0;
