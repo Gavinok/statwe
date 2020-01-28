@@ -3,7 +3,7 @@
 # statwe version
 CC=gcc
 VERSION = 2.1
-CFLAGS = -std=c99 -Os -Wall -pedantic -Wextra -s -lasound -lX11
+CFLAGS = -Os -Wall -pedantic -Wextra -s -lasound -lX11
 BINARY = statwe
 
 all: statwe
