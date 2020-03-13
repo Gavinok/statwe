@@ -36,6 +36,7 @@ int termals(const char *file);
 static void usage(void);
 static void XSetRoot(const char *name);
 int sleepie(int time);
+void die(const char *errstr, ...);
 
 /* Bar Elements */
 char *base(char* base, int len);
@@ -51,6 +52,9 @@ const char * ram_used(void)
 	uintmax_t total, free, buffers, cached;
 
 	FILE *infile = fopen("/proc/meminfo","r");
+	if (infile == NULL)
+		die("ram_used fopen: %s", strerror(errno));
+
 	fscanf(infile,"MemTotal: %ju kB\nMemFree: %ju kB\nMemAvailable: %ju kB\nBuffers: %ju kB\nCached: %ju kB\n",
 			&total,&free,&buffers,&buffers,&cached);
 	fclose(infile);
@@ -69,8 +73,7 @@ const char * datetime(const char *fmt)
 
 	t = time(NULL);
 	if (!strftime(buf, sizeof(buf), fmt, localtime(&t))) {
-		/* warn("strftime: Result string exceeds buffer size"); */
-		return NULL;
+		die("strftime: %s", strerror(errno));
 	}
 
 	return buf;
@@ -84,6 +87,8 @@ const char *filetostring(const char *file, char buf[MAXSTR])
 	char *filebuffer = 0;
 	long length;
 	FILE *f = fopen(file, "rb");
+	if (f == NULL)
+		die("filetostring fopen: %s", strerror(errno));
 
 	if (f)
 	{
@@ -178,10 +183,10 @@ const char * battery_bar(const char *bat)
 
 
 	if (perc < 0) {
-		return "error assesing battery level";
+		die("battery perc is %d", perc);
 	}
 	if (state < 0) {
-		return "error assesing state";
+		die("battery state is %d", state);
 	}
 
 	/* state */
@@ -196,9 +201,8 @@ float brightness()
 	char lightbuf[MAXSTR];
 	int currentbrightness = atoi(filetostring(cur_brightness,lightbuf));    
 	int maxbrightness = atoi(filetostring(max_brightness,lightbuf));    
-	if(maxbrightness == 0){
-		printf("error retreiving brightness percentage\n");
-		return -1;
+	if(maxbrightness <= 0){
+		die("error max brightness = %d\n", maxbrightness);
 	}
 	float percentbrightness = ((float)currentbrightness/maxbrightness)*100;
 	return percentbrightness;
@@ -253,8 +257,7 @@ static void XSetRoot(const char *name)
 	Display *display;
 
 	if (( display = XOpenDisplay(0x0)) == NULL ) {
-		fprintf(stderr, "[barM] cannot open display!\n");
-		exit(1);
+		die("cannot open display! %s\n", strerror(errno));
 	}
 
 	XStoreName(display, DefaultRootWindow(display), name);
@@ -275,7 +278,7 @@ int sleepie(int time)
 	tim.tv_nsec = 500;
 
 	if(nanosleep(&tim , &tim2) < 0 )   
-		return -1;
+		die("nanosleep %s", strerror(errno));
 	return 0;   
 }
 
@@ -337,6 +340,19 @@ int normal()
 		return -1; 
 	}
 	return 0;
+}
+
+/*
+ * kill the program and print error
+ */
+void die(const char *errstr, ...)
+{
+	va_list ap;
+
+	va_start(ap, errstr);
+	vfprintf(stderr, errstr, ap);
+	va_end(ap);
+	exit(1);
 }
 
 int main(int argc, char *argv[])
