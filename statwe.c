@@ -168,7 +168,7 @@ int battery_state(const char *bat)
 	const char *state = filetostring(path, batbuf);
 	if (strncmp(state, "Discharging", 3) == 0)
 		charging = 0;
-	else if (strncmp(state, "Charging", 3) == 0)
+	else if ((strncmp(state, "Charging", 3) == 0) || (strncmp(state, "Full", 3) == 0))
 		charging = 1;
 	return charging;
 }
