@@ -170,6 +170,9 @@ int battery_state(const char *bat)
 		charging = 0;
 	else if ((strncmp(state, "Charging", 3) == 0) || (strncmp(state, "Full", 3) == 0))
 		charging = 1;
+	else
+		die("failed to determin state");
+
 	return charging;
 }
 
