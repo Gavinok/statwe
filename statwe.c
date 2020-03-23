@@ -148,7 +148,7 @@ int battery_perc(const char *bat)
 	if (snprintf(path, sizeof(path), "/sys/class/power_supply/%s/capacity", bat) < 0) {
 		return -1;
 	}
-	const char *percstr = filetostring(path,batbuf);
+	const char *percstr = filetostring(path, batbuf);
 	perc = atoi(percstr); 
 	return perc;
 
@@ -165,7 +165,7 @@ int battery_state(const char *bat)
 		return -1;
 	}
 
-	const char *state = filetostring(path,batbuf);
+	const char *state = filetostring(path, batbuf);
 	if (strncmp(state, "Discharging", 3) == 0)
 		charging = 0;
 	else if (strncmp(state, "Charging", 3) == 0)
