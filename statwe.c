@@ -354,6 +354,7 @@ void die(const char *errstr, ...)
 	va_start(ap, errstr);
 	vfprintf(stderr, errstr, ap);
 	va_end(ap);
+	XSetRoot(errstr);
 	exit(1);
 }
 
