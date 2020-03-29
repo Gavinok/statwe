@@ -166,12 +166,11 @@ int battery_state(const char *bat)
 	}
 
 	const char *state = filetostring(path, batbuf);
-	if (strncmp(state, "Discharging", 3) == 0)
-		charging = 0;
-	else if ((strncmp(state, "Charging", 3) == 0) || (strncmp(state, "Full", 3) == 0))
+	/* assume it is discharging if it is not full or charging*/
+	if ((strncmp(state, "Charging", 3) == 0) || (strncmp(state, "Full", 3) == 0))
 		charging = 1;
-	else
-		die("failed to determin state");
+	else /*work around for broken charging apci*/
+		charging = 0;
 
 	return charging;
 }
