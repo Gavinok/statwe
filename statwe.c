@@ -48,6 +48,7 @@ int normal();
 const char *
 ram_used(void)
 {
+	static char ram[MAXSTR];
 	uintmax_t total, free, buffers, cached;
 
 	FILE *infile = fopen("/proc/meminfo","r");
@@ -58,8 +59,11 @@ ram_used(void)
 			&total,&free,&buffers,&buffers,&cached);
 	fclose(infile);
 
-	static char ram[MAXSTR];
-	snprintf(ram,sizeof(ram),"%.0fM",(double)((total - free - buffers - cached)/1024));
+	
+
+	int len_needed = snprintf(ram, sizeof(ram), "%.0fM",(double)((total - free - buffers - cached)/1024));
+	if (len_needed < 0 || (unsigned) len_needed >= sizeof(ram))
+		die("snprintf len_needed = %d", len_needed);
 	return ram;
 }
 
@@ -149,9 +153,10 @@ battery_perc(const char *bat)
 	char path[PATH_MAX];
 	char batbuf[MAXSTR];
 
-	if (snprintf(path, sizeof(path), "/sys/class/power_supply/%s/capacity", bat) < 0) {
-		return -1;
-	}
+	int len_needed = snprintf(path, PATH_MAX, "/sys/class/power_supply/%s/capacity", bat);
+	if (len_needed < 0 || (unsigned) len_needed >= sizeof(path))
+		die("snprintf len_needed = %d", len_needed);
+
 	const char *percstr = filetostring(path, batbuf);
 	perc = atoi(percstr); 
 	return perc;
@@ -166,9 +171,9 @@ battery_state(const char *bat)
 	char path[PATH_MAX];
 	char batbuf[MAXSTR];
 
-	if (snprintf(path, sizeof(path), "/sys/class/power_supply/%s/status", bat) < 0) {
-		return -1;
-	}
+	int len_needed = snprintf(path, sizeof(path), "/sys/class/power_supply/%s/status", bat);
+	if (len_needed < 0 || (unsigned) len_needed >= sizeof(path))
+		die("snprintf len_needed = %d", len_needed);
 
 	const char *state = filetostring(path, batbuf);
 	/* assume it is discharging if it is not full or charging*/
@@ -306,11 +311,16 @@ base(char* base, int len)
 	const char * ram = ram_used();
 	int temp = termals(temperature_file);
 	int mail = countmail(maildir);
-	if (mail > 0) {
-		snprintf(base, len, "[💌 %d] [%d°] [%s] %s %s%d%%", mail, temp, ram, date, bar, batperc);
-	}else{
-		snprintf(base, len, "[%d°] [%s] %s %s%d%%", temp, ram, date, bar, batperc);
-	}
+
+	int len_needed = -2;
+	if (mail > 0)
+		len_needed = snprintf(base, len, "[💌 %d] [%d°] [%s] %s %s%d%%", mail, temp, ram, date, bar, batperc);
+	else
+		len_needed = snprintf(base, len, "[%d°] [%s] %s %s%d%%", temp, ram, date, bar, batperc);
+
+	if (len_needed < 0 || (unsigned) len_needed >= sizeof(base))
+			die("snprintf len_needed = %d", len_needed);
+
 	return base;
 }
 
@@ -323,7 +333,11 @@ light()
 	float brightperc = brightness();
 	char start[200], status[250];
 	base(start, 200);
-	snprintf(status, sizeof(status), " %.0f%%  %s", brightperc, start);
+
+	int len_needed = snprintf(status, sizeof(status), " %.0f%%  %s", brightperc, start);
+	if (len_needed < 0 || (unsigned) len_needed >= sizeof(status))
+		die("snprintf len_needed = %d", len_needed);
+	
 	XSetRoot(status);
 	return 0;
 }
@@ -338,7 +352,11 @@ audio()
 	vol++; // since this is for some reason off by one percent
 	char start[200], status[250];
 	base(start, 200);
-	snprintf(status, sizeof(status), " %d%%  %s", vol, start);
+
+	int len_needed = snprintf(status, sizeof(status), " %d%%  %s", vol, start);
+	if (len_needed < 0 || (unsigned) len_needed >= sizeof(status))
+		die("snprintf len_needed = %d", len_needed);
+
 	XSetRoot(status);
 	return 0;
 }
