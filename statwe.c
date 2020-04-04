@@ -46,7 +46,8 @@ int normal();
 /*
  * returns the amount of ram that is used by the system as a string
  */
-const char * ram_used(void)
+const char *
+ram_used(void)
 {
 	uintmax_t total, free, buffers, cached;
 
@@ -66,7 +67,8 @@ const char * ram_used(void)
 /*
  * returns the time and date as a string
  */
-const char * datetime(const char *fmt)
+const char *
+datetime(const char *fmt)
 {
 	time_t t;
 
@@ -81,7 +83,8 @@ const char * datetime(const char *fmt)
 /*
  * returns the contents of a file as a string
  */
-const char *filetostring(const char *file, char buf[MAXSTR])
+const char *
+filetostring(const char *file, char buf[MAXSTR])
 {
 	char *filebuffer = 0;
 	long length;
@@ -116,7 +119,8 @@ const char *filetostring(const char *file, char buf[MAXSTR])
 /*
  * returns: a string containing the battery status as a bar
  */
-const char * battery_print(int perc, int charging)
+const char *
+battery_print(int perc, int charging)
 {
 	/* printf("state %d\n", charging); */
 	if (charging)
@@ -138,7 +142,8 @@ const char * battery_print(int perc, int charging)
 /*
  * returns the battery percentage as an int
  */
-int battery_perc(const char *bat)
+int
+battery_perc(const char *bat)
 {
 	int perc = -1;
 	char path[PATH_MAX];
@@ -153,7 +158,8 @@ int battery_perc(const char *bat)
 
 }
 
-int battery_state(const char *bat)
+int
+battery_state(const char *bat)
 {
 	/* int state = -1; */
 	int charging = 1;
@@ -177,7 +183,8 @@ int battery_state(const char *bat)
 /*
  * returns: the battery status as a string
  */
-const char * battery_bar(const char *bat)
+const char *
+battery_bar(const char *bat)
 {
 	int perc = battery_perc(bat);
 	int state = battery_state(bat);
@@ -197,7 +204,8 @@ const char * battery_bar(const char *bat)
 /*
  * returns: the brightness percentage as a float
  */
-float brightness()
+float 
+brightness()
 {
 	char lightbuf[MAXSTR];
 	int currentbrightness = atoi(filetostring(cur_brightness,lightbuf));    
@@ -212,7 +220,8 @@ float brightness()
 /*
  * returns: the current cpu temp
  */
-int termals(const char *file)
+int 
+termals(const char *file)
 {
 	char tempbuf[MAXSTR];
 	/* uintmax_t temp; */
@@ -223,9 +232,8 @@ int termals(const char *file)
 	return temp;
 }
 
-
-
-int countmail(const char *dir)
+int 
+countmail(const char *dir)
 {
 	int file_count = 0;
 	DIR * dirp;
@@ -244,7 +252,8 @@ int countmail(const char *dir)
 /*
  * prints the way the command is intended to be used to standerd error
  */
-static void usage(void)
+void 
+usage(void)
 {
 	fputs("usage: statwe [-bavh] \n", stderr);
 	exit(1);
@@ -253,7 +262,8 @@ static void usage(void)
 /*
  * Sets the rootwindow name
  */
-static void XSetRoot(const char *name)
+void
+XSetRoot(const char *name)
 {
 	Display *display;
 
@@ -272,7 +282,8 @@ static void XSetRoot(const char *name)
  *
  * returns 0 if successful
  */
-int sleepie(int time)
+int 
+sleepie(int time)
 {
 	struct timespec tim, tim2;
 	tim.tv_sec = time;
@@ -286,7 +297,8 @@ int sleepie(int time)
 /* 
  * The base of the status bar
  */
-char *base(char* base, int len)
+char *
+base(char* base, int len)
 {
 	int batperc = battery_perc(bataddress);
 	const char * date = datetime("%a, %b %d %I:%M%p");
@@ -305,7 +317,8 @@ char *base(char* base, int len)
 /*
  * returns: light percentage as in int
  */
-int light()
+int 
+light()
 {
 	float brightperc = brightness();
 	char start[200], status[250];
@@ -318,7 +331,8 @@ int light()
 /*
  * prints the normal status bar with the volume level added at the front
  */
-int audio()
+int
+audio()
 {
 	int vol = get_volume();
 	vol++; // since this is for some reason off by one percent
@@ -332,7 +346,8 @@ int audio()
 /*
  * prints the status bar to the root window title
  */
-int normal()
+int 
+normal()
 {
 	char status[200];
 	base(status, 200);
@@ -346,7 +361,8 @@ int normal()
 /*
  * kill the program and print error
  */
-void die(const char *errstr, ...)
+void
+die(const char *errstr, ...)
 {
 	va_list ap;
 
@@ -357,7 +373,8 @@ void die(const char *errstr, ...)
 	exit(1);
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
 	for (int i = 1; i < argc; i++){
 		/* these options take no arguments */

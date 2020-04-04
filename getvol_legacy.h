@@ -1,7 +1,8 @@
 #include <alsa/asoundlib.h>
 
 /* Alsa Audio Parsing */
-int audio_volume(long* outvol);
+int 
+audio_volume(long* outvol);
 
 /*
  * gets the volume of the int int main audio source 
@@ -11,7 +12,8 @@ int audio_volume(long* outvol);
  *
  * returns: 0 if errors occure
  */
-int audio_volume(long* outvol)
+int 
+audio_volume(long* outvol)
 {
     int ret = 0;
     snd_mixer_t* handle;
