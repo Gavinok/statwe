@@ -11,7 +11,6 @@
 /* #define PATH_MAX 100 */
 #define VERSION 0.1
 #define MAXSTR  1024
-char buf[MAXSTR];
 
 /* Ram Usage Parsing*/
 const char * ram_used(void);
@@ -70,10 +69,11 @@ ram_used(void)
 const char *
 datetime(const char *fmt)
 {
+	static char buf[MAXSTR];
 	time_t t;
 
 	t = time(NULL);
-	if (!strftime(buf, sizeof(buf), fmt, localtime(&t))) {
+	if (!strftime(buf, MAXSTR, fmt, localtime(&t))) {
 		die("strftime: %s", strerror(errno));
 	}
 
