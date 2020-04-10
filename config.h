@@ -8,4 +8,4 @@ static const char *max_brightness = "/sys/class/backlight/intel_backlight/max_br
 
 static const char *temperature_file = "/sys/bus/platform/devices/coretemp.0/hwmon/hwmon4/temp3_input";
 static const char *maildir = "/home/gavinok/.local/share/mail/personal/INBOX/new/";
-static int mail_enable = 0;
+static int mail_enable = 1;
