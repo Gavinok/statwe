@@ -40,7 +40,7 @@ void die(const char *errstr, ...);
 char *base(char* base, int len);
 int light();
 int audio();
-int normal();
+int normal(int recording);
 
 /*
  * returns the amount of ram that is used by the system as a string
@@ -90,11 +90,13 @@ datetime(const char *fmt)
 const char *
 filetostring(const char *file, char buf[MAXSTR])
 {
+
 	char *filebuffer = 0;
 	long length;
 	FILE *f = fopen(file, "rb");
+	/* invalid file */
 	if (f == NULL)
-		die("filetostring fopen: %s", strerror(errno));
+		return "n/a";
 
 	if (f)
 	{
@@ -117,7 +119,7 @@ filetostring(const char *file, char buf[MAXSTR])
 		return buf;
 	}
 	printf("failed to parse file");
-	return NULL;
+	return "n/a";
 }
 
 /*
@@ -357,7 +359,7 @@ audio()
 	char start[200], status[250];
 	base(start, 200);
 
-	int len_needed = snprintf(status, sizeof(status), " %d%%  %s", vol, start);
+	int len_needed = snprintf(status, sizeof(status), "🔊 %d%%  %s", vol, start);
 	if (len_needed < 0 || (unsigned) len_needed >= sizeof(status))
 		die("audio snprintf len_needed = %d", len_needed);
 
@@ -369,10 +371,18 @@ audio()
  * prints the status bar to the root window title
  */
 int 
-normal()
+normal(int recording)
 {
 	char status[200];
-	base(status, 200);
+	char start[200];
+	base(start, 200);
+	if (recording) {
+		int len_needed = snprintf(status, sizeof(status), "⏺ %s", start);
+		if (len_needed < 0 || (unsigned) len_needed >= sizeof(status))
+			die("audio snprintf len_needed = %d", len_needed);
+	} else
+		strcpy(status, start);
+
 	XSetRoot(status);
 	if(sleepie(sleeptime) < 0){
 		return -1; 
@@ -398,25 +408,30 @@ die(const char *errstr, ...)
 int
 main(int argc, char *argv[])
 {
+	int recording = 0;
 	for (int i = 1; i < argc; i++){
 		/* these options take no arguments */
+		//update brightness
 		if (!strcmp(argv[i], "-b")){
 			if(light() < 0){
 				return 1;
 			}
 			return 0;
-		}//update brightness
+		}//update volume
 		else if (!strcmp(argv[i], "-a")){
 			if(audio() < 0){
 				return 1;
 			}
 			return 0;
-		}//update volume
+		}
+		else if (!strcmp(argv[i], "-r")){
+			recording = 1;
+		}
 		else if (!strcmp(argv[i], "-h")) 
 			usage();
 	}
 	while(1){
-		if(normal() < 0){
+		if(normal(recording) < 0){
 			return 1;
 		}
 	}

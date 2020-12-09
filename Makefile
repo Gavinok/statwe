@@ -7,10 +7,9 @@ CFLAGS = -Os -Wall -pedantic -Wextra -s -lasound -lX11
 BINARY = statwe
 
 all: statwe
-	$(CC)  $(BINARY).c $(CFLAGS) -o $(BINARY)
 
 statwe: statwe.c
-	$(CC)  $(BINARY).c $(CFLAGS) -o $(BINARY)
+	$(CC) $(BINARY).c -g $(CFLAGS) -o $(BINARY)
 
 uninstall:
 	rm -f /usr/local/bin/$(BINARY)\
