@@ -9,7 +9,7 @@ BINARY = statwe
 all: statwe
 
 statwe: statwe.c
-	$(CC) $(BINARY).c -g $(CFLAGS) -o $(BINARY)
+	$(CC) $(BINARY).c -O2 -g $(CFLAGS) -o $(BINARY)
 
 uninstall:
 	rm -f /usr/local/bin/$(BINARY)\
