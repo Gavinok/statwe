@@ -32,15 +32,15 @@ int termals(const char *file);
 
 /* helper functions */
 static void usage(void);
-static void XSetRoot(const char *name);
+static int XSetRoot(const char *name);
 int sleepie(int time);
 void die(const char *errstr, ...);
 
 /* Bar Elements */
 char *base(char* base, int len);
-int light();
-int audio();
-int normal(int recording);
+int light(int printer(const char*));
+int audio(int printer(const char*));
+int normal(int printer(const char*), int recording);
 
 /*
  * returns the amount of ram that is used by the system as a string
@@ -269,7 +269,7 @@ usage(void)
 /*
  * Sets the rootwindow name
  */
-void
+int
 XSetRoot(const char *name)
 {
 	Display *display;
@@ -282,6 +282,7 @@ XSetRoot(const char *name)
 	XSync(display, 0);
 
 	XCloseDisplay(display);
+	return 0;
 }
 
 /*
@@ -334,7 +335,7 @@ base(char* base, int len)
  * returns: light percentage as in int
  */
 int 
-light()
+light(int printer(const char*))
 {
 	float brightperc = brightness();
 	char start[MAXSTR], status[250];
@@ -343,8 +344,8 @@ light()
 	int len_needed = snprintf(status, sizeof(status), " %.0f%%  %s", brightperc, start);
 	if (len_needed < 0 || (unsigned) len_needed >= sizeof(status))
 		die("light snprintf len_needed = %d", len_needed);
-	
-	XSetRoot(status);
+
+	printer(status);
 	return 0;
 }
 
@@ -352,7 +353,7 @@ light()
  * prints the normal status bar with the volume level added at the front
  */
 int
-audio()
+audio(int printer(const char*))
 {
 	int vol = get_volume();
 	vol++; // since this is for some reason off by one percent
@@ -363,15 +364,15 @@ audio()
 	if (len_needed < 0 || (unsigned) len_needed >= sizeof(status))
 		die("audio snprintf len_needed = %d", len_needed);
 
-	XSetRoot(status);
+	printer(status);
 	return 0;
 }
 
 /*
  * prints the status bar to the root window title
  */
-int 
-normal(int recording)
+int
+normal(int printer(const char*), int recording)
 {
 	char status[200];
 	char start[200];
@@ -383,7 +384,7 @@ normal(int recording)
 	} else
 		strcpy(status, start);
 
-	XSetRoot(status);
+	printer(status);
 	if(sleepie(sleeptime) < 0){
 		return -1; 
 	}
@@ -409,17 +410,23 @@ int
 main(int argc, char *argv[])
 {
 	int recording = 0;
+	int (*printer)(const char*) = XSetRoot;
 	for (int i = 1; i < argc; i++){
 		/* these options take no arguments */
+		//print to stdout instead
+				//print to stdout
+		if (!strcmp(argv[i], "-p")){
+		  	printer = puts;
+		}
 		//update brightness
 		if (!strcmp(argv[i], "-b")){
-			if(light() < 0){
+			if(light(printer) < 0){
 				return 1;
 			}
 			return 0;
 		}//update volume
 		else if (!strcmp(argv[i], "-a")){
-			if(audio() < 0){
+			if(audio(printer) < 0){
 				return 1;
 			}
 			return 0;
@@ -431,7 +438,7 @@ main(int argc, char *argv[])
 			usage();
 	}
 	while(1){
-		if(normal(recording) < 0){
+		if(normal(printer, recording) < 0){
 			return 1;
 		}
 	}
