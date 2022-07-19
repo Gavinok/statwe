@@ -59,7 +59,7 @@ ram_used(void)
 			&total,&free,&buffers,&buffers,&cached);
 	fclose(infile);
 
-	
+
 
 	int len_needed = snprintf(ram, sizeof(ram), "%.0fM",(double)((total - free - buffers - cached)/1024));
 	if (len_needed < 0 || (unsigned) len_needed >= sizeof(ram))
@@ -160,7 +160,7 @@ battery_perc(const char *bat)
 		die("battery_perc snprintf len_needed = %d", len_needed);
 
 	const char *percstr = filetostring(path, batbuf);
-	perc = atoi(percstr); 
+	perc = atoi(percstr);
 	return perc;
 
 }
@@ -211,12 +211,12 @@ battery_bar(const char *bat)
 /*
  * returns: the brightness percentage as a float
  */
-float 
+float
 brightness()
 {
 	char lightbuf[MAXSTR];
-	int currentbrightness = atoi(filetostring(cur_brightness,lightbuf));    
-	int maxbrightness = atoi(filetostring(max_brightness,lightbuf));    
+	int currentbrightness = atoi(filetostring(cur_brightness,lightbuf));
+	int maxbrightness = atoi(filetostring(max_brightness,lightbuf));
 	if(maxbrightness <= 0){
 		die("error max brightness = %d\n", maxbrightness);
 	}
@@ -227,19 +227,19 @@ brightness()
 /*
  * returns: the current cpu temp
  */
-int 
+int
 termals(const char *file)
 {
 	char tempbuf[MAXSTR];
 	/* uintmax_t temp; */
 	int temp;
-	temp = atoi(filetostring(file,tempbuf));    
+	temp = atoi(filetostring(file,tempbuf));
 	temp = temp/1000;
 
 	return temp;
 }
 
-int 
+int
 countmail(const char *dir)
 {
 	int file_count = 0;
@@ -259,7 +259,7 @@ countmail(const char *dir)
 /*
  * prints the way the command is intended to be used to standerd error
  */
-void 
+void
 usage(void)
 {
 	fputs("usage: statwe [-bavh] \n", stderr);
@@ -290,19 +290,19 @@ XSetRoot(const char *name)
  *
  * returns 0 if successful
  */
-int 
+int
 sleepie(int time)
 {
 	struct timespec tim, tim2;
 	tim.tv_sec = time;
 	tim.tv_nsec = 500;
 
-	if(nanosleep(&tim , &tim2) < 0 )   
+	if(nanosleep(&tim , &tim2) < 0 )
 		die("nanosleep %s", strerror(errno));
-	return 0;   
+	return 0;
 }
 
-/* 
+/*
  * The base of the status bar
  */
 char *
@@ -334,7 +334,7 @@ base(char* base, int len)
 /*
  * returns: light percentage as in int
  */
-int 
+int
 light(int printer(const char*))
 {
 	float brightperc = brightness();
@@ -386,7 +386,7 @@ normal(int printer(const char*), int recording)
 
 	printer(status);
 	if(sleepie(sleeptime) < 0){
-		return -1; 
+		return -1;
 	}
 	return 0;
 }
@@ -434,7 +434,7 @@ main(int argc, char *argv[])
 		else if (!strcmp(argv[i], "-r")){
 			recording = 1;
 		}
-		else if (!strcmp(argv[i], "-h")) 
+		else if (!strcmp(argv[i], "-h"))
 			usage();
 	}
 	while(1){
