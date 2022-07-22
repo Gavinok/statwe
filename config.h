@@ -9,3 +9,5 @@ static const char *max_brightness = "/sys/class/backlight/intel_backlight/max_br
 static const char *temperature_file = "/sys/class/thermal/thermal_zone0/temp";
 static const char *maildir = "/home/gavinok/.local/share/mail/personal/INBOX/new/";
 static int mail_enable = 1;
+
+static const char *lemonfmt = "%%{r}%s\n";

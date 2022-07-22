@@ -33,6 +33,8 @@ int termals(const char *file);
 /* helper functions */
 static void usage(void);
 static int XSetRoot(const char *name);
+static int lemonputs(const char* str);
+
 int sleepie(int time);
 void die(const char *errstr, ...);
 
@@ -285,8 +287,19 @@ XSetRoot(const char *name)
 	return 0;
 }
 
+
 /*
- * tels the program to wait 1 secound before runinng again
+ * Print to stdout in a lemonbar friendly way
+ */
+int
+lemonputs(const char* str)
+{
+	printf(lemonfmt, str);
+	return fflush(stdout);
+}
+
+/*
+ * tels the program to wait 1 secound before running again
  *
  * returns 0 if successful
  */
@@ -321,9 +334,11 @@ base(char* base, int len)
 
 	int len_needed = -2;
 	if (mail > 0)
-		len_needed = snprintf(base, len, "[💌 %d] [%d°] [%s] %s %s%d%%", mail, temp, ram, date, bar, batperc);
+		len_needed = snprintf(base, len, "[ %d] [%d°] [%s] %s %s%d%%",
+				      mail, temp, ram, date, bar, batperc);
 	else
-		len_needed = snprintf(base, len, "[%d°] [%s] %s %s%d%%", temp, ram, date, bar, batperc);
+		len_needed = snprintf(base, len, "[%d°] [%s] %s %s%d%%",
+				      temp, ram, date, bar, batperc);
 
 	if (len_needed < 0 || len_needed >= len)
 			die("base snprintf len_needed = %d", len_needed);
@@ -410,34 +425,35 @@ int
 main(int argc, char *argv[])
 {
 	int recording = 0;
+	char one_off = 0;
 	int (*printer)(const char*) = XSetRoot;
 	for (int i = 1; i < argc; i++){
 		/* these options take no arguments */
-		//print to stdout instead
-				//print to stdout
-		if (!strcmp(argv[i], "-p")){
-		  	printer = puts;
-		}
-		//update brightness
+		// don't run infinitely
+		if (!strcmp(argv[i], "-x"))
+			one_off = 1;
+		if (!strcmp(argv[i], "-p"))
+			printer = puts;
+		// print in a lemonbar friendly format
+		if (!strcmp(argv[i], "-l"))
+			printer = lemonputs;
+		// update brightness
 		if (!strcmp(argv[i], "-b")){
-			if(light(printer) < 0){
+			if(light(printer) < 0)
 				return 1;
-			}
 			return 0;
 		}//update volume
 		else if (!strcmp(argv[i], "-a")){
-			if(audio(printer) < 0){
+			if(audio(printer) < 0)
 				return 1;
-			}
 			return 0;
 		}
-		else if (!strcmp(argv[i], "-r")){
+		else if (!strcmp(argv[i], "-r"))
 			recording = 1;
-		}
 		else if (!strcmp(argv[i], "-h"))
 			usage();
 	}
-	while(1){
+	while(!one_off){
 		if(normal(printer, recording) < 0){
 			return 1;
 		}
