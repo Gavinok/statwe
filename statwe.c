@@ -8,7 +8,6 @@
 #include "getvol.h"
 
 /* #define alloca(x)  __builtin_alloca(x) */
-/* #define PATH_MAX 100 */
 #define VERSION 0.1
 #define MAXSTR  1024
 
@@ -21,7 +20,7 @@ const char * datetime(const char *fmt);
 /* Battery Status */
 const char * battery_print(int perc, int charging);
 int battery_perc(const char *bat);
-int battery_state(const char *bat);
+int is_charging(const char *bat);
 const char * battery_bar(const char *bat);
 
 /* Brightness Parsing */
@@ -168,25 +167,22 @@ battery_perc(const char *bat)
 }
 
 int
-battery_state(const char *bat)
+is_charging(const char *bat)
 {
 	/* int state = -1; */
-	int charging = 1;
 	char path[PATH_MAX];
 	char batbuf[MAXSTR];
 
 	int len_needed = snprintf(path, sizeof(path), "/sys/class/power_supply/%s/status", bat);
 	if (len_needed < 0 || (unsigned) len_needed >= sizeof(path))
-		die("battery_state snprintf len_needed = %d", len_needed);
+		die("is_charging snprintf len_needed = %d", len_needed);
 
 	const char *state = filetostring(path, batbuf);
 	/* assume it is discharging if it is not full or charging*/
 	if ((strncmp(state, "Charging", 3) == 0) || (strncmp(state, "Full", 3) == 0))
-		charging = 1;
+		return 1;
 	else /*work around for broken charging apci*/
-		charging = 0;
-
-	return charging;
+		return 0;
 }
 
 /*
@@ -196,15 +192,13 @@ const char *
 battery_bar(const char *bat)
 {
 	int perc = battery_perc(bat);
-	int state = battery_state(bat);
+	int state = is_charging(bat);
 
 
-	if (perc < 0) {
+	if (perc < 0)
 		die("battery perc is %d", perc);
-	}
-	if (state < 0) {
+	if (state < 0)
 		die("battery state is %d", state);
-	}
 
 	/* state */
 	return battery_print(perc, state);
