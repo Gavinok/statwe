@@ -38,7 +38,7 @@ int sleepie(int time);
 void die(const char *errstr, ...);
 
 /* Bar Elements */
-char *base(char* base, int len);
+char *base(char* base, size_t len);
 int light(int printer(const char*));
 int audio(int printer(const char*));
 int normal(int printer(const char*), int recording);
@@ -313,7 +313,7 @@ sleepie(int time)
  * The base of the status bar
  */
 char *
-base(char* base, int len)
+base(char* base, size_t len)
 {
 	int batperc = battery_perc(bataddress);
 	const char * date = datetime("%a, %b %d %I:%M%p");
@@ -326,7 +326,7 @@ base(char* base, int len)
 	else
 		mail = 0;
 
-	int len_needed = -2;
+	long len_needed = -2;
 	if (mail > 0)
 		len_needed = snprintf(base, len, "[ %d] [%d°] [%s] %s %s%d%%",
 				      mail, temp, ram, date, bar, batperc);
@@ -334,7 +334,7 @@ base(char* base, int len)
 		len_needed = snprintf(base, len, "[%d°] [%s] %s %s%d%%",
 				      temp, ram, date, bar, batperc);
 
-	if (len_needed < 0 || len_needed >= len)
+	if (len_needed < 0 || (size_t)len_needed >= len)
 			die("base snprintf len_needed = %d", len_needed);
 
 	return base;
