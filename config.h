@@ -1,5 +1,6 @@
+// -*- compile-command: "sudo make clean install" -*-
 /* set static variables */
-static const char bataddress[] = "BAT0"; // battery to get status from 
+static const char bataddress[] = "BAT0"; // battery to get status from
 static int sleeptime = 2; // time to sleep in secounds
 
 /* brightness settings */
