@@ -3,8 +3,9 @@
 # statwe version
 CC=gcc
 VERSION = 2.1
-CFLAGS = -Os -Wall -pedantic -Wextra -s -lasound -lX11
+INCS = -s -lasound -lX11
 BINARY = statwe
+CFLAGS = -Wpedantic -Wall -Wconversion -Wextra  -Wno-deprecated-declarations -Os ${INCS}
 
 all: statwe
 

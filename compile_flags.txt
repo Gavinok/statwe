@@ -1,7 +1,9 @@
--std=c99 
--Ofast 
--Wall 
--Wextra 
--s 
--lasound 
+-s
+-lasound
 -lX11
+-Wpedantic
+-Wall
+-Wconversion
+-Wextra
+-Wno-deprecated-declarations
+-Os
