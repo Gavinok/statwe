@@ -419,13 +419,10 @@ int
 main(int argc, char *argv[])
 {
 	int recording = 0;
-	char one_off = 0;
 	int (*printer)(const char*) = XSetRoot;
 	for (int i = 1; i < argc; i++){
 		/* these options take no arguments */
 		// don't run infinitely
-		if (!strcmp(argv[i], "-x"))
-			one_off = 1;
 		if (!strcmp(argv[i], "-p"))
 			printer = puts;
 		// print in a lemonbar friendly format
@@ -446,8 +443,13 @@ main(int argc, char *argv[])
 			recording = 1;
 		else if (!strcmp(argv[i], "-h"))
 			usage();
+		if (!strcmp(argv[i], "-x")){
+			if(normal(printer, recording) < 0)
+				return 1;
+			return 0;
+		}
 	}
-	while(!one_off){
+	while(1){
 		if(normal(printer, recording) < 0){
 			return 1;
 		}
