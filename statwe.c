@@ -213,9 +213,10 @@ brightness()
 	char lightbuf[MAXSTR];
 	int currentbrightness = atoi(filetostring(cur_brightness,lightbuf));
 	int maxbrightness = atoi(filetostring(max_brightness,lightbuf));
-	if(maxbrightness <= 0){
+
+	if(maxbrightness <= 0)
 		die("error max brightness = %d\n", maxbrightness);
-	}
+
 	float percentbrightness = ((float)currentbrightness/maxbrightness)*100;
 	return percentbrightness;
 }
@@ -227,7 +228,6 @@ int
 termals(const char *file)
 {
 	char tempbuf[MAXSTR];
-	/* uintmax_t temp; */
 	int temp;
 	temp = atoi(filetostring(file,tempbuf));
 	temp = temp/1000;

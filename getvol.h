@@ -3,7 +3,7 @@
 #include <alsa/control.h>
 
 /*
- * Gets the volume of the master audio source 
+ * Gets the volume of the master audio source
  *
  * returns: current volume on Master audio channel
  */
